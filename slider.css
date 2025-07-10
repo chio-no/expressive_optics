@@ -1,0 +1,160 @@
+/* --- スライダの基本設定 --- */
+/* スライダー全体のラッパー */
+/* NEW: スライダーと値を横並びにするための親コンテナ */
+.slider-container {
+  display: flex;
+  align-items: center;
+  /* 垂直方向の中央揃え */
+  width: 90%;
+  max-width: 95%;
+  margin-left: 30px;
+
+  margin-bottom: 30px;
+}
+
+/* MODIFIED: スライダー部分のラッパー */
+.slider-wrapper {
+  flex-grow: 1;
+  /* 横幅の余白をすべて埋める */
+  position: relative;
+  height: 40px;
+  /* つまみの影なども含めて高さを確保 */
+  display: flex;
+  align-items: center;
+  /* 右側のpaddingは不要になったため削除 */
+}
+
+/* MODIFIED: 値表示のスタイル */
+.slider-value {
+  width: 45px;
+  /* 値表示エリアの幅を確保 */
+  text-align: right;
+  /* 値を右揃えにする */
+  margin-left: 10px;
+  /* スライダーと値の間の余白 */
+  font-size: 14px;
+  color: #f3f3f3;
+  /* position: absolute; は不要になったため削除 */
+}
+
+/* プログレスバー（変更なし、参考として記載）*/
+.slider-progress {
+  height: 100%;
+  /* widthはJSで直接px指定するため、初期値は0または任意の値でOK */
+  width: 0;
+  /* background: linear-gradient(90deg, black, white); */
+  border-radius: 5px;
+  transition: width 0.05s ease-out;
+  /* なめらかな動きのため */
+}
+
+.slider-background {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 7.5px;
+  /* バーの太さ */
+  background: linear-gradient(90deg, rgb(40, 40, 40), rgb(220, 220, 220));
+  /* 未選択部分の色 */
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* JSで操作するinput要素のクリックを妨げないようにする */
+  pointer-events: none;
+}
+
+.slider-tooltip {
+  position: absolute;
+  left: 50%;
+  /* 初期値 (JavaScriptで更新) */
+  top: -12px;
+  /* バーからの距離 */
+  transform: translateX(-50%);
+  background-color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  color: #343a40;
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+  /* クリックイベントを無効化 */
+  transition: left 0.1s ease-out;
+  /* なめらかな動き */
+}
+
+/* ツールチップの吹き出し部分 */
+.slider-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  background: transparent;
+  outline: none;
+  position: relative;
+  /* 追加 */
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
+  /* 追加 */
+}
+
+/* --- スライダのつまみ (Thumb) --- */
+/* WebKit系ブラウザ (Chrome, Safari) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* デフォルトスタイルをリセット */
+  appearance: none;
+  width: 24px;
+  /* つまみの幅 */
+  height: 24px;
+  /* つまみの高さ */
+  background: rgb(70, 70, 70);
+  /* つまみの背景色 */
+  border-radius: 50%;
+  /* 円形にする */
+  cursor: pointer;
+  /* カーソルをポインターに */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  /* 影を追加 */
+  border: 2px solid #e0e0e0;
+  /* 境界線 */
+
+  /* バー(10px)の中央に配置するための調整 */
+  margin-top: -2px;
+}
+
+/* Mozilla Firefox */
+.slider::-moz-range-thumb {
+  width: 24px;
+  /* つまみの幅 */
+  height: 24px;
+  /* つまみの高さ */
+  background: #ffffff;
+  /* つまみの背景色 */
+  border-radius: 50%;
+  /* 円形にする */
+  cursor: pointer;
+  /* カーソルをポインターに */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  /* 影を追加 */
+  border: 1px solid #e0e0e0;
+  /* 境界線をリセット */
+}
+
+.slider-value {
+  font-size: 20px;
+  font-weight: 350;
+}

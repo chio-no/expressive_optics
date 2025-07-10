@@ -1,0 +1,109 @@
+:root {
+  --bg-color: #000000;
+}
+
+/* --- 全体のコンテナとタブの基本設定 --- */
+.tabs-container {
+  --bg-corlor: ;
+  width: 100%;
+  max-width: 700px;
+  margin: 40px auto;
+  margin-bottom: 40px;
+}
+
+.tab-buttons {
+  display: flex;
+}
+
+.tab-content {
+  display: none;
+  padding: 25px;
+  /* アクティブタブとコンテンツエリアの一体感を出す */
+  background-color: var(--bg-color);
+  border-radius: 0 8px 8px 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* --- タブボタンのスタイル（全面的に見直し） --- */
+.tab-button {
+  position: relative;
+  padding: 18px 30px;
+  border: none;
+  background-color: transparent;
+  /* ボタン自体の背景は透明に */
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 600;
+  color: #f3f3f3;
+  z-index: 1;
+  transition: color 0.2s ease;
+}
+
+/* タブの形状と背景色を::before疑似要素で描画 */
+.tab-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px 8px 0 0;
+  /* 上部の角を丸める */
+  transition: background-color 0.2s ease;
+  z-index: -1;
+  /* 文字の背後に配置 */
+}
+
+/* --- 非アクティブなタブのスタイル --- */
+.tab-button:not(.active)::before {
+  background-color: rgba(70, 70, 70, 0.8);
+  /* 枠線を描画していたbox-shadowを削除 */
+}
+
+.tab-button:not(.active):hover::before {
+  background-color: #e8eaed;
+}
+
+/* --- アクティブなタブのスタイル --- */
+.tab-button.active {
+  color: #f3f3f3;
+  z-index: 3;
+  background-color: var(--bg-color);
+  /* 最前面に表示 */
+  border-radius: 8px 8px 0 0;
+}
+
+.tab-button.active::before {
+  background-color: var(--bg-color);
+  /* コンテンツエリアと同じ白 */
+  /* 枠線を描画していたbox-shadowとborderを削除 */
+  border: none;
+  border-radius: 8px 8px 0 0;
+}
+
+/* --- タブ間の区切り線（全体を削除） --- */
+/*
+.tab-button:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background-color: #c4c9d2;
+  z-index: 2;
+}
+
+.tab-button.active+.tab-button::after {
+  opacity: 0;
+}
+
+.tab-button.active::after {
+  opacity: 0;
+}
+*/

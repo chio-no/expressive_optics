@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:;base64,=" />
+    <link rel="stylesheet" href="https://use.typekit.net/asl6wuz.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="tab.css" />
+    <link rel="stylesheet" href="slider.css" />
+    <link rel="stylesheet" href="dropdown.css" />
+    <link rel="stylesheet" href="toggle.css" />
+    <link rel="stylesheet" href="https://use.typekit.net/asl6wuz.css" />
+
+    <title>FWD</title>
+  </head>
+
+  <body>
+    <div id="loader"></div>
+    <div id="container">
+      <div id="overlay">
+        <div class="tabs-container">
+          <div class="top-container">
+            <div class="dropdown">
+              <button class="dropdown-btn" id="dropdownBtn" data-value="0">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+                <span id="selectedValue">Select Shape</span>
+              </button>
+
+              <div class="dropdown-content" id="myDropdown">
+                <div class="dropdown-item" data-value="0">Convex</div>
+                <div class="dropdown-item" data-value="1">Prism</div>
+                <div class="dropdown-item" data-value="2">TriPrism</div>
+                <div class="dropdown-item" data-value="3">HexaPrism</div>
+                <div class="dropdown-item" data-value="4">QuadPrism</div>
+                <div class="dropdown-item" data-value="5">NgonalPrism</div>
+              </div>
+            </div>
+
+            <button class="dropdown-btn-dwn" id="download">
+              <div class="icon-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 8l5-5 5 5M12 15V3"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
+          <div class="tab-buttons">
+            <button class="tab-button active" data-tab="tab1">BASIC</button>
+            <button class="tab-button" data-tab="tab2">EFFECTS</button>
+            <button class="tab-button" data-tab="tab3">MASK</button>
+          </div>
+
+          <div class="tab-contents">
+            <div id="tab1" class="tab-content active">
+              <div>
+                <label for="lensThickness">lens thickness</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_lt"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="lensThickness"
+                      min="0"
+                      max="20"
+                      value="5"
+                      step="0.1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_lt">5</div>
+                </div>
+              </div>
+
+              <div>
+                <label for="haloLevel">halo level</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_hl"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="haloLevel"
+                      min="0"
+                      max="20"
+                      value="0.0"
+                      step="0.1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_hl">0.0</div>
+                </div>
+              </div>
+
+              <div>
+                <label for="prismLevel">prism level</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_pl"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="prismLevel"
+                      min="0"
+                      max="100"
+                      value="100"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_pl">100</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab2" class="tab-content">
+              <div>
+                <label for="text">text</label>
+                <div class="search-container">
+                  <input
+                    type="text"
+                    id="text"
+                    class="search-box"
+                    placeholder="type here ..."
+                    data-value=""
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="textSize">text size</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_ts"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="textSize"
+                      min="0"
+                      max="20"
+                      value="10"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_ts">10</div>
+                </div>
+              </div>
+
+              <div class="toggle-wrapper">
+                <label for="cross">cross</label>
+
+                <label class="toggle-switch">
+                  <input type="checkbox" id="cross" />
+                  <span class="slider-toggle"></span>
+                </label>
+              </div>
+
+              <div>
+                <label for="crossDensity">cross density</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_cd"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="crossDensity"
+                      min="0"
+                      max="100"
+                      value="38"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_cd">38</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab3" class="tab-content">
+              <div class="dropdown">
+                <button
+                  class="dropdown-btn-mask"
+                  id="masktypeBtn"
+                  data-value="0"
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                  <span id="selectedType">Mask Type</span>
+                </button>
+
+                <div class="dropdown-content" id="typeDropdown" data-value="0">
+                  <div class="dropdown-item_mask" data-value="0">no mask</div>
+                  <div class="dropdown-item_mask" data-value="1">positive</div>
+                  <div class="dropdown-item_mask" data-value="2">negative</div>
+                </div>
+              </div>
+              <div>
+                <label for="maskStart">mask start</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_ms"></div>
+                    </div>
+
+                    <input
+                      type="range"
+                      class="slider"
+                      id="maskStart"
+                      min="0"
+                      max="100"
+                      value="0"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_ms">0</div>
+                </div>
+              </div>
+
+              <div>
+                <label for="maskEnd">mask end</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_me"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="maskEnd"
+                      min="0"
+                      max="88"
+                      value="45"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_me">45</div>
+                </div>
+              </div>
+
+              <div>
+                <label for="maskAngle">mask angle</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_ma"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="maskAngle"
+                      min="0"
+                      max="360"
+                      value="0"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_ma">0</div>
+                </div>
+              </div>
+
+              <div>
+                <label for="holeSize">hole size</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_hs"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="holeSize"
+                      min="0"
+                      max="100"
+                      value="0"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_hs">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.7.0/dist/es-module-shims.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.144.0/build/three.module.js",
+          "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.144.0/examples/jsm/controls/OrbitControls.js",
+          "three/examples/jsm/loaders/3DMLoader": "https://unpkg.com/three@0.144.0/examples/jsm/loaders/3DMLoader.js",
+          "three/examples/jsm/loaders/STLLoader": "https://unpkg.com/three@0.144.0/examples/jsm/loaders/STLLoader.js",
+          "rhino3dm": "https://unpkg.com/rhino3dm@7.15.0/rhino3dm.module.js",
+          "rhinocompute": "https://www.unpkg.com/compute-rhino3d@0.13.0-beta/compute.rhino3d.module.js"
+        }
+      }
+    </script>
+
+    <script type="module" src="script-ngonal-none.js"></script>
+    <script type="module" src="slider.js"></script>
+  </body>
+</html>

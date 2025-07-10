@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "compute-rhino3d": "^0.13.0-beta",
+    "rhino3dm": "^8.17.0"
+  }
+}

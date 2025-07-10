@@ -1,0 +1,63 @@
+/* 親要素のスタイル（新規追加） */
+.toggle-wrapper {
+  display: flex;
+  flex-direction: column; /* 要素を縦に並べる */
+  align-items: flex-start; /* 左揃え */
+  gap: 4px; /* ラベルとスイッチの間の隙間 */
+  font-family: sans-serif;
+  margin-bottom: 30px;
+}
+
+/* 上に表示するラベルテキストのスタイル（新規追加） */
+.toggle-label-text {
+  font-size: 14px;
+  color: #000; /* テキストの色 */
+  padding-left: 2px; /* 見た目の微調整 */
+}
+
+/* 以下は既存のトグルスイッチのスタイル（変更なし） */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-toggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: background-color 0.4s;
+  border-radius: 34px;
+}
+
+.slider-toggle:before {
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: transform 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+input:checked + .slider-toggle {
+  background-color: rgb(140, 205, 255);
+}
+
+input:checked + .slider-toggle:before {
+  transform: translateX(20px);
+}
