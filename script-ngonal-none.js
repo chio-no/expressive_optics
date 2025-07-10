@@ -262,7 +262,7 @@ async function compute() {
     const loadedGeometry = await new Promise((resolve, reject) => {
       const stlLoader = new STLLoader();
       stlLoader.load(
-        "kurihara.stl",
+        "mock.stl",
         (geometry) => resolve(geometry), // 成功したらgeometryを返す
         undefined, // onProgressは不要ならundefined
         (error) => reject(error) // 失敗したらエラーを返す

@@ -260,7 +260,7 @@ async function compute() {
 
     // STLファイルをロードしてレンダリング
     const stlLoader = new STLLoader();
-    stlLoader.load("kurihara.stl", (geometry) => {
+    stlLoader.load("mock.stl", (geometry) => {
       const material = new THREE.MeshStandardMaterial({
         color: modelColor,
       });
