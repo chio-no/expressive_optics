@@ -5,7 +5,7 @@ import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
-const definitionName = "filterworkdesignerforui.gh";
+const definitionName = "filterworkdesignerforui_vray.gh";
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
 lensThickness.addEventListener("mouseup", onSliderChange, false);
@@ -206,12 +206,14 @@ async function compute() {
   param1.append([0], [lensThickness.valueAsNumber]);
 
   const param2 = new RhinoCompute.Grasshopper.DataTree("prismLevel");
+  console.log(param2)
   param2.append([0], [prismLevel.valueAsNumber]);
 
   const param3 = new RhinoCompute.Grasshopper.DataTree("haloLevel");
   param3.append([0], [haloLevel.valueAsNumber]);
   //テキストの処理注意
   const param4 = new RhinoCompute.Grasshopper.DataTree("crossString");
+  console.log(param4)
   param4.append([0], [text.value]);
 
   const param5 = new RhinoCompute.Grasshopper.DataTree("textSize");
@@ -223,8 +225,6 @@ async function compute() {
   const crossValue = cross.checked ? 1 : 0;
   // const crossStr = cross.checked ? "cross" : "no cross";
   // statusValue.textContent = crossStr;
-  // console.log(crossValue);
-  // console.log(param6);
   param6.append([0], [crossValue]);
 
   const param7 = new RhinoCompute.Grasshopper.DataTree("crossDensity");
@@ -255,7 +255,7 @@ async function compute() {
   //ngonalが選択されたら他のモデルを表示させてごまかす
   let threeMesh;
 
-  if (dropdownBtn.dataset.value == "5") {
+  if (dropdownBtn.dataset.value == "10") {
     // STLファイルをロードする場合
 
     // Promiseを使ってstlLoader.loadをawaitできるようにする

@@ -5,7 +5,7 @@ import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
-const definitionName = "filterworkdesignerforui.gh";
+const definitionName = "filterworkdesignerforui_vray.gh";
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
 lensThickness.addEventListener("mouseup", onSliderChange, false);
