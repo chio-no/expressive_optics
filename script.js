@@ -206,12 +206,14 @@ async function compute() {
   param1.append([0], [lensThickness.valueAsNumber]);
 
   const param2 = new RhinoCompute.Grasshopper.DataTree("prismLevel");
+  console.log(param2);
   param2.append([0], [prismLevel.valueAsNumber]);
 
   const param3 = new RhinoCompute.Grasshopper.DataTree("haloLevel");
   param3.append([0], [haloLevel.valueAsNumber]);
   //テキストの処理注意
   const param4 = new RhinoCompute.Grasshopper.DataTree("crossString");
+  console.log(param4);
   param4.append([0], [text.value]);
 
   const param5 = new RhinoCompute.Grasshopper.DataTree("textSize");
@@ -223,8 +225,6 @@ async function compute() {
   const crossValue = cross.checked ? 1 : 0;
   // const crossStr = cross.checked ? "cross" : "no cross";
   // statusValue.textContent = crossStr;
-  // console.log(crossValue);
-  // console.log(param6);
   param6.append([0], [crossValue]);
 
   const param7 = new RhinoCompute.Grasshopper.DataTree("crossDensity");
@@ -251,59 +251,48 @@ async function compute() {
   //スピナーの表示
   document.getElementById("loader").style.display = "block";
 
-  let mesh;
+  // RhinoComputeでメッシュを生成する場合
+  const trees = [];
+  trees.push(
+    param1,
+    param2,
+    param3,
+    param4,
+    param5,
+    param6,
+    param7,
+    param8,
+    param9,
+    param10,
+    param11,
+    param12,
+    param13
+  );
 
-  //ngonalを何とかする
-  //ngonalが選択されたら他のモデルを表示させてごまかす
-  if (dropdownBtn.dataset.value == "5") {
-    const modelColor = new THREE.Color("rgb(140, 205, 235)");
+  const res = await RhinoCompute.Grasshopper.evaluateDefinition(
+    definition,
+    trees
+  );
 
-    // STLファイルをロードしてレンダリング
-    const stlLoader = new STLLoader();
-    stlLoader.load("mock.stl", (geometry) => {
-      const material = new THREE.MeshStandardMaterial({
-        color: modelColor,
-      });
-      mesh = new THREE.Mesh(geometry, material);
-    });
-  } else {
-    // clear values
-    const trees = [];
-    trees.push(param1);
-    trees.push(param2);
-    trees.push(param3);
-    trees.push(param4);
-    trees.push(param5);
-    trees.push(param6);
-    trees.push(param7);
-    trees.push(param8);
-    trees.push(param9);
-    trees.push(param10);
-    trees.push(param11);
-    trees.push(param12);
-    trees.push(param13);
+  // b64メッシュを取得
+  console.log(res.values[1].InnerTree["{0}"]);
+  const data = JSON.parse(res.values[1].InnerTree["{0}"][0].data);
+  const rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
 
-    const res = await RhinoCompute.Grasshopper.evaluateDefinition(
-      definition,
-      trees
-    );
-
-    // hide spinner
-    document.getElementById("loader").style.display = "none";
-
-    //get the b64 mesh output
-    //b64がres.values[1]であることを確認すること
-    const data = JSON.parse(res.values[1].InnerTree["{0}"][0].data);
-    mesh = rhino.DracoCompression.decompressBase64String(data);
-  }
-
-  const modelColor = new THREE.Color("rgb(140, 205, 235)");
+  // マテリアルを作成
   const material = new THREE.MeshStandardMaterial({
-    color: modelColor,
+    color: "rgb(140, 205, 235)",
   });
-  const threeMesh = meshToThreejs(mesh, material);
 
-  // clear the scene
+  // RhinoのメッシュをThree.jsのメッシュに変換
+  const threeMesh = meshToThreejs(rhinoMesh, material);
+
+  // --- 以下の処理はif/elseの完了後に行われるため、共通化できる ---
+
+  // ローダーを非表示に
+  document.getElementById("loader").style.display = "none";
+
+  // シーンから既存のメッシュを削除
   scene.traverse((child) => {
     if (child.isMesh) {
       scene.remove(child);
