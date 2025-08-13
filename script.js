@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
 const definitionName = "filterworkdesignerforui_vray.gh";
 // Set ui
@@ -358,8 +357,6 @@ function init() {
 
   window.addEventListener("resize", onWindowResize, false);
 
-  
-
   animate();
 }
 
@@ -389,32 +386,72 @@ async function download() {
   //現在のパラメータを取得し、CSV形式とする
   const crossValue = cross.checked ? 1 : 0;
 
-  const csvContent="Lens Parameters"+"\n"+lensThickness.valueAsNumber+'\n'+0.6+'\n'+haloLevel.valueAsNumber+'\n'+prismLevel.valueAsNumber+'\n'+maskStart.valueAsNumber
-  +'\n'+maskEnd.valueAsNumber+'\n'+maskAngle.valueAsNumber+'\n'+holeSize.valueAsNumber+'\n'+text.value+'\n'+textSize.valueAsNumber+'\n'+crossDensity.valueAsNumber
-  +'\n'+dropdownBtn.dataset.value+'\n'+dropdownBtn_mask.dataset.value+'\n'+crossValue+'\n'
-  
-  const [fileHandle] = await window.showOpenFilePicker({
-          types: [
-            {
-              description: 'CSV Files',
-              accept: {
-                'text/csv': ['.csv'],
-              },
-            },
-          ],
-        });
+  const csvContent =
+    "Lens Parameters" +
+    "\n" +
+    lensThickness.valueAsNumber +
+    "\n" +
+    0.6 +
+    "\n" +
+    haloLevel.valueAsNumber +
+    "\n" +
+    prismLevel.valueAsNumber +
+    "\n" +
+    maskStart.valueAsNumber +
+    "\n" +
+    maskEnd.valueAsNumber +
+    "\n" +
+    maskAngle.valueAsNumber +
+    "\n" +
+    holeSize.valueAsNumber +
+    "\n" +
+    text.value +
+    "\n" +
+    textSize.valueAsNumber +
+    "\n" +
+    crossDensity.valueAsNumber +
+    "\n" +
+    dropdownBtn.dataset.value +
+    "\n" +
+    dropdownBtn_mask.dataset.value +
+    "\n" +
+    crossValue +
+    "\n";
 
-     // 2. 書き込み用のストリームを作成する
-        // この時点でファイルの中身は空になります（トランケート）
-        const writableStream = await fileHandle.createWritable();
+  try {
+    const [fileHandle] = await window.showOpenFilePicker({
+      types: [
+        {
+          description: "CSV Files",
+          accept: {
+            "text/csv": [".csv"],
+          },
+        },
+      ],
+    });
 
-        // 3. 新しい内容をストリームに書き込む
-        await writableStream.write(csvContent);
+    // 2. 書き込み用のストリームを作成する
+    // この時点でファイルの中身は空になります（トランケート）
+    const writableStream = await fileHandle.createWritable();
 
-        // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
-        await writableStream.close();
+    // 3. 新しい内容をストリームに書き込む
+    await writableStream.write(csvContent);
 
-  // スピナーを非表示
-  document.getElementById("loader").style.display = "none";
+    // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
+    await writableStream.close();
 
+    // スピナーを非表示
+    document.getElementById("loader").style.display = "none";
+
+    console.log("csv exported");
+    //今の値をUI側に返す
+  } catch (error) {
+    // ユーザーがファイル選択をキャンセルした場合など
+    if (error.name === "AbortError") {
+      console.log("ファイル選択がキャンセルされました。");
+    } else {
+      console.log(`❌ エラーが発生しました: ${error.message}`);
+      console.error(error);
+    }
+  }
 }
