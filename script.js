@@ -205,7 +205,7 @@ async function compute() {
   const param1 = new RhinoCompute.Grasshopper.DataTree("lensThickness");
   param1.append([0], [lensThickness.valueAsNumber]);
 
-  const param2 = new RhinoCompute.Grasshopper.DataTree("prismLevel");
+  const param2 = new RhinoCompute.Grasshopper.DataTree("PrismLevel");
   console.log(param2);
   param2.append([0], [prismLevel.valueAsNumber]);
 
@@ -358,6 +358,8 @@ function init() {
 
   window.addEventListener("resize", onWindowResize, false);
 
+  
+
   animate();
 }
 
@@ -379,107 +381,40 @@ function meshToThreejs(mesh, material) {
   return new THREE.Mesh(geometry, material);
 }
 
-//モデルダウンロード　現在のパラメータで一応再計算する
+//現在のパラメータをCSVファイルに書き出す
 async function download() {
   // スピナーを表示
   document.getElementById("loader").style.display = "block";
 
-  // compute関数と同様にインプットを作成
-  //gh側のパラメータを取得し、UI上での値を入れる
-  const param1 = new RhinoCompute.Grasshopper.DataTree("lensThickness");
-  param1.append([0], [lensThickness.valueAsNumber]);
-
-  const param2 = new RhinoCompute.Grasshopper.DataTree("prismLevel");
-  param2.append([0], [prismLevel.valueAsNumber]);
-
-  const param3 = new RhinoCompute.Grasshopper.DataTree("haloLevel");
-  param3.append([0], [haloLevel.valueAsNumber]);
-  //テキストの処理注意
-  const param4 = new RhinoCompute.Grasshopper.DataTree("crossString");
-  param4.append([0], [text.value]);
-
-  const param5 = new RhinoCompute.Grasshopper.DataTree("textSize");
-  param5.append([0], [textSize.valueAsNumber]);
-
-  //トグルの処理
-  const param6 = new RhinoCompute.Grasshopper.DataTree("cross");
-  // this.checkedがtrueなら1、falseなら0をvalueに代入
+  //現在のパラメータを取得し、CSV形式とする
   const crossValue = cross.checked ? 1 : 0;
-  // const crossStr = cross.checked ? "cross" : "no cross";
-  // statusValue.textContent = crossStr;
-  // console.log(crossValue);
-  // console.log(param6);
-  param6.append([0], [crossValue]);
 
-  const param7 = new RhinoCompute.Grasshopper.DataTree("crossDensity");
-  param7.append([0], [crossDensity.valueAsNumber]);
+  const csvContent="Lens Parameters"+"\n"+lensThickness.valueAsNumber+'\n'+0.6+'\n'+haloLevel.valueAsNumber+'\n'+prismLevel.valueAsNumber+'\n'+maskStart.valueAsNumber
+  +'\n'+maskEnd.valueAsNumber+'\n'+maskAngle.valueAsNumber+'\n'+holeSize.valueAsNumber+'\n'+text.value+'\n'+textSize.valueAsNumber+'\n'+crossDensity.valueAsNumber
+  +'\n'+dropdownBtn.dataset.value+'\n'+dropdownBtn_mask.dataset.value+'\n'+crossValue+'\n'
+  
+  const [fileHandle] = await window.showOpenFilePicker({
+          types: [
+            {
+              description: 'CSV Files',
+              accept: {
+                'text/csv': ['.csv'],
+              },
+            },
+          ],
+        });
 
-  const param8 = new RhinoCompute.Grasshopper.DataTree("maskStart");
-  param8.append([0], [maskStart.valueAsNumber]);
+     // 2. 書き込み用のストリームを作成する
+        // この時点でファイルの中身は空になります（トランケート）
+        const writableStream = await fileHandle.createWritable();
 
-  const param9 = new RhinoCompute.Grasshopper.DataTree("maskEnd");
-  param9.append([0], [maskEnd.valueAsNumber]);
+        // 3. 新しい内容をストリームに書き込む
+        await writableStream.write(csvContent);
 
-  const param10 = new RhinoCompute.Grasshopper.DataTree("maskAngle");
-  param10.append([0], [maskAngle.valueAsNumber]);
-
-  const param11 = new RhinoCompute.Grasshopper.DataTree("holeSize");
-  param11.append([0], [holeSize.valueAsNumber]);
-
-  const param12 = new RhinoCompute.Grasshopper.DataTree("lensSelector");
-  param12.append([0], [dropdownBtn.dataset.value]);
-
-  const param13 = new RhinoCompute.Grasshopper.DataTree("mask");
-  param13.append([0], [dropdownBtn_mask.dataset.value]);
-
-  const trees = [
-    param1,
-    param2,
-    param3,
-    param4,
-    param5,
-    param6,
-    param7,
-    param8,
-    param9,
-    param10,
-    param11,
-    param12,
-    param13,
-  ];
-
-  // Grasshopperの定義を評価
-  const res = await RhinoCompute.Grasshopper.evaluateDefinition(
-    definition,
-    trees
-  );
-
-  // 新しい3dmファイルを作成
-  const doc = new rhino.File3dm();
-
-  // Grasshopperの出力からジオメトリを取得し、docに追加
-  // 注意: 表示用のメッシュはres.values[1]でしたが、ここでは
-  // 3dmファイルに保存するための生のジオメトリ(Brep等)が
-  // res.values[0]に含まれていると想定しています。
-  const objects = res.values[0].InnerTree["{0}"];
-  for (let i = 0; i < objects.length; i++) {
-    const data = JSON.parse(objects[i].data);
-    const rhinoObject = rhino.CommonObject.decode(data);
-    doc.objects().add(rhinoObject, null);
-  }
+        // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
+        await writableStream.close();
 
   // スピナーを非表示
   document.getElementById("loader").style.display = "none";
 
-  // 3dmファイルを生成してダウンロードをトリガー
-  const buffer = doc.toByteArray();
-  const blob = new Blob([buffer], { type: "application/octet-stream" });
-
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "model.3dm";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(link.href);
 }
