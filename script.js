@@ -395,6 +395,8 @@ async function download() {
     "\n" +
     haloLevel.valueAsNumber +
     "\n" +
+    dropdownBtn.dataset.value +
+    "\n" +
     prismLevel.valueAsNumber +
     "\n" +
     maskStart.valueAsNumber +
@@ -410,8 +412,6 @@ async function download() {
     textSize.valueAsNumber +
     "\n" +
     crossDensity.valueAsNumber +
-    "\n" +
-    dropdownBtn.dataset.value +
     "\n" +
     dropdownBtn_mask.dataset.value +
     "\n" +
