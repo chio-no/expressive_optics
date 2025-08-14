@@ -205,14 +205,12 @@ async function compute() {
   param1.append([0], [lensThickness.valueAsNumber]);
 
   const param2 = new RhinoCompute.Grasshopper.DataTree("PrismLevel");
-  console.log(param2);
   param2.append([0], [prismLevel.valueAsNumber]);
 
   const param3 = new RhinoCompute.Grasshopper.DataTree("haloLevel");
   param3.append([0], [haloLevel.valueAsNumber]);
   //テキストの処理注意
   const param4 = new RhinoCompute.Grasshopper.DataTree("crossString");
-  console.log(param4);
   param4.append([0], [text.value]);
 
   const param5 = new RhinoCompute.Grasshopper.DataTree("textSize");
@@ -225,6 +223,8 @@ async function compute() {
   // const crossStr = cross.checked ? "cross" : "no cross";
   // statusValue.textContent = crossStr;
   param6.append([0], [crossValue]);
+  console.log(param6)
+  console.log(crossValue)
 
   const param7 = new RhinoCompute.Grasshopper.DataTree("crossDensity");
   param7.append([0], [crossDensity.valueAsNumber]);
@@ -274,9 +274,19 @@ async function compute() {
   );
 
   // b64メッシュを取得
+  console.log(res)
   console.log(res.values[1].InnerTree["{0}"]);
-  const data = JSON.parse(res.values[1].InnerTree["{0}"][0].data);
-  const rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
+  //crossvalueの有無でindexがどうやら違いそうなのでそれへの対応
+  let data, rhinoMesh
+  if (crossValue==1){
+                 data = JSON.parse(res.values[1].InnerTree["{0;0;0;0;0}"][0].data);
+          rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
+  }
+  else{
+       data = JSON.parse(res.values[1].InnerTree["{0}"][0].data);
+      rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
+    
+  }
 
   // マテリアルを作成
   const material = new THREE.MeshStandardMaterial({
@@ -387,8 +397,6 @@ async function download() {
   const crossValue = cross.checked ? 1 : 0;
 
   const csvContent =
-    "Lens Parameters" +
-    "\n" +
     lensThickness.valueAsNumber +
     "\n" +
     0.6 +
