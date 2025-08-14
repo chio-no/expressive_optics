@@ -5,7 +5,6 @@ import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 
 const definitionName = "filterworkdesignerforui_vray.gh";
-let fileHandle;
 
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
@@ -52,6 +51,9 @@ holeSize.addEventListener("touchend", onSliderChange, false);
 const downloadButton = document.getElementById("download");
 downloadButton.addEventListener("click", download, false);
 
+const importButton=document.getElementById("import")
+importButton.addEventListener("click",importParams,false)
+
 //ドロップダウンロジック レンズ形状編
 // DOM要素を取得
 const dropdownBtn = document.getElementById("dropdownBtn");
@@ -61,6 +63,7 @@ const dropdownItems = document.querySelectorAll(".dropdown-item");
 
 // ボタンがクリックされたらメニューの表示/非表示を切り替える
 dropdownBtn.addEventListener("click", function (event) {
+  event.preventDefault();
   event.stopPropagation();
   dropdownContent.classList.toggle("show");
 });
@@ -98,6 +101,7 @@ const dropdownItems_mask = document.querySelectorAll(".dropdown-item_mask");
 
 // ボタンがクリックされたらメニューの表示/非表示を切り替える
 dropdownBtn_mask.addEventListener("click", function (event) {
+  event.preventDefault();
   event.stopPropagation();
   dropdownContent_mask.classList.toggle("show");
 });
@@ -180,7 +184,6 @@ cross.addEventListener("change", function () {
   //rhninoを回す
   onSliderChange();
 });
-
 //ここからrhino.compute依存
 let rhino, definition;
 rhino3dm().then(async (m) => {
@@ -305,6 +308,7 @@ async function compute() {
       scene.remove(child);
     }
   });
+  threeMesh.position.set(0,0,100)
 
   scene.add(threeMesh);
 }
@@ -337,6 +341,8 @@ function init() {
   // Rhino models are z-up, so set this as the default
   THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
 
+
+
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#1D1D1F");
   camera = new THREE.PerspectiveCamera(
@@ -345,7 +351,11 @@ function init() {
     1,
     1000
   );
-  camera.position.z = 50;
+  camera.position.set(210, 210,220);
+
+
+
+
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -428,16 +438,11 @@ async function download(event) {
     "\n";
 
   try {
-    [fileHandle] = await window.showOpenFilePicker({
-      types: [
-        {
-          description: "CSV Files",
-          accept: {
-            "text/csv": [".csv"],
-          },
-        },
-      ],
-    });
+
+    // const csvName=new Date().getTime().toString()+".csv"
+const dirHandle = await window.showDirectoryPicker()
+    const fileHandle=await dirHandle.getFileHandle("test.csv", { create: true })
+
 
     // 2. 書き込み用のストリームを作成する
     // この時点でファイルの中身は空になります（トランケート）
@@ -454,8 +459,6 @@ async function download(event) {
 
     console.log("csv exported");
     //今の値をUI側に返す
-    //しっかりページがリロードされるので、CSVから値を読み込んで返すしかない
-    importParams();
 
 
 
@@ -472,8 +475,98 @@ async function download(event) {
   }
 }
 
-function importParams(){
-  console.log(fileHandle)
 
 
+async function importParams(){
+    //ファイルピッカを表示し、その中のパラメータをHTMLへ戻す
+    try {
+    const [fileHandle] = await window.showOpenFilePicker({
+      types: [
+        {
+          description: "CSV Files",
+          accept: {
+            "text/csv": [".csv"],
+          },
+        },
+      ],
+    });
+  // 2. 選択されたファイルオブジェクトを取得
+  const file = await fileHandle.getFile();
+
+  // 3. ファイルの内容をカンマ区切りとして読み込む
+  const csvText = await file.text();
+      const rows = csvText.trim().split('\n').map(row => row.split(','));
+
+      //値を返す
+      lensThickness.value=rows[1]
+      haloLevel.value=rows[3]
+      dropdownBtn.dataset.value=rows[4]
+      prismLevel.value=rows[5]
+      maskStart.value=rows[6]
+      maskEnd.value=rows[7]
+      maskAngle.value=rows[8]
+      holeSize.value=rows[9]
+      text.value=rows[10]
+      textSize.value=rows[11]
+      crossDensity.value=rows[12]
+      dropdownBtn_mask.dataset.value=rows[13]
+      cross.checked=Boolean(parseInt(rows[14]))
+
+      
+
+      const filterText=returnFilterTypeTxt(rows[4])
+      const maskText=returnMaskTypeTxt(rows[13])
+
+
+      //ドロップダウンに反映させた値を表示させる
+          selectedValue.textContent = filterText;
+    selectedValue_mask.textContent = maskText;
+
+
+      compute();
+
+
+  } catch (error) {
+    // ユーザーがファイル選択をキャンセルした場合など
+    if (error.name === "AbortError") {
+      console.log("ファイル選択がキャンセルされました。");
+    } else {
+      console.log(`❌ エラーが発生しました: ${error.message}`);
+      console.error(error);
+    }
+  }
+
+}
+
+function returnMaskTypeTxt(maskTypeValue){
+if (maskTypeValue=="0"){
+  return "no mask"
+}
+else if(maskTypeValue=="1"){
+  return "positive"
+}
+else{
+  return "negative"
+}
+}
+
+function returnFilterTypeTxt(filterTypeValue){
+if (filterTypeValue=="0"){
+  return "Convex"
+}
+else if(filterTypeValue=="1"){
+  return "Prism"
+}
+else if(filterTypeValue=="2"){
+  return "TriPrism"
+}
+else if(filterTypeValue=="3"){
+  return "HexaPrism"
+}
+else if(filterTypeValue=="4"){
+  return "QuadPrism"
+}
+else{
+  return "Polygon"
+}
 }
