@@ -5,6 +5,8 @@ import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 
 const definitionName = "filterworkdesignerforui_vray.gh";
+let fileHandle;
+
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
 lensThickness.addEventListener("mouseup", onSliderChange, false);
@@ -223,8 +225,6 @@ async function compute() {
   // const crossStr = cross.checked ? "cross" : "no cross";
   // statusValue.textContent = crossStr;
   param6.append([0], [crossValue]);
-  console.log(param6)
-  console.log(crossValue)
 
   const param7 = new RhinoCompute.Grasshopper.DataTree("crossDensity");
   param7.append([0], [crossDensity.valueAsNumber]);
@@ -274,8 +274,6 @@ async function compute() {
   );
 
   // b64メッシュを取得
-  console.log(res)
-  console.log(res.values[1].InnerTree["{0}"]);
   //crossvalueの有無でindexがどうやら違いそうなのでそれへの対応
   let data, rhinoMesh
   if (crossValue==1){
@@ -389,14 +387,17 @@ function meshToThreejs(mesh, material) {
 }
 
 //現在のパラメータをCSVファイルに書き出す
-async function download() {
+async function download(event) {
+//ページのリロードを防止
+  event.preventDefault();
   // スピナーを表示
   document.getElementById("loader").style.display = "block";
 
   //現在のパラメータを取得し、CSV形式とする
   const crossValue = cross.checked ? 1 : 0;
 
-  const csvContent =
+  const csvContent ="Lens Params"+
+    "\n"+
     lensThickness.valueAsNumber +
     "\n" +
     0.6 +
@@ -427,7 +428,7 @@ async function download() {
     "\n";
 
   try {
-    const [fileHandle] = await window.showOpenFilePicker({
+    [fileHandle] = await window.showOpenFilePicker({
       types: [
         {
           description: "CSV Files",
@@ -453,7 +454,14 @@ async function download() {
 
     console.log("csv exported");
     //今の値をUI側に返す
+    //しっかりページがリロードされるので、CSVから値を読み込んで返すしかない
+    importParams();
+
+
+
   } catch (error) {
+      // スピナーを非表示
+    document.getElementById("loader").style.display = "none";
     // ユーザーがファイル選択をキャンセルした場合など
     if (error.name === "AbortError") {
       console.log("ファイル選択がキャンセルされました。");
@@ -462,4 +470,10 @@ async function download() {
       console.error(error);
     }
   }
+}
+
+function importParams(){
+  console.log(fileHandle)
+
+
 }
