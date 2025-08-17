@@ -48,6 +48,10 @@ const holeSize = document.getElementById("holeSize");
 holeSize.addEventListener("mouseup", onSliderChange, false);
 holeSize.addEventListener("touchend", onSliderChange, false);
 
+const holeType= document.getElementById("holeType");
+holeType.addEventListener("mouseup", onSliderChange, false);
+holeType.addEventListener("touchend", onSliderChange, false);
+
 const downloadButton = document.getElementById("download");
 downloadButton.addEventListener("click", download, false);
 
@@ -250,6 +254,9 @@ async function compute() {
   const param13 = new RhinoCompute.Grasshopper.DataTree("mask");
   param13.append([0], [dropdownBtn_mask.dataset.value]);
 
+    const param14 = new RhinoCompute.Grasshopper.DataTree("holeType");
+  param14.append([0], [holeType.valueAsNumber]);
+
   //スピナーの表示
   document.getElementById("loader").style.display = "block";
 
@@ -268,7 +275,8 @@ async function compute() {
     param10,
     param11,
     param12,
-    param13
+    param13,
+    param14
   );
 
   const res = await RhinoCompute.Grasshopper.evaluateDefinition(
@@ -435,24 +443,35 @@ async function download(event) {
     dropdownBtn_mask.dataset.value +
     "\n" +
     crossValue +
+    "\n"+
+    holeType.valueAsNumber+
     "\n";
+
 
   try {
 
-    // const csvName=new Date().getTime().toString()+".csv"
+const CopyCSVName=returnCSVfileName();
+
 const dirHandle = await window.showDirectoryPicker()
+const dirHandleForCopy=await dirHandle.getDirectoryHandle('log', { create: true });
+
     const fileHandle=await dirHandle.getFileHandle("test.csv", { create: true })
+    const fileHandleCopy=await dirHandleForCopy.getFileHandle(CopyCSVName, { create: true })
+
 
 
     // 2. 書き込み用のストリームを作成する
     // この時点でファイルの中身は空になります（トランケート）
     const writableStream = await fileHandle.createWritable();
+    const writableStreamCopy = await fileHandleCopy.createWritable();
 
     // 3. 新しい内容をストリームに書き込む
     await writableStream.write(csvContent);
+    await writableStreamCopy.write(csvContent);
 
     // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
     await writableStream.close();
+    await writableStreamCopy.close();
 
     // スピナーを非表示
     document.getElementById("loader").style.display = "none";
@@ -497,20 +516,45 @@ async function importParams(){
   const csvText = await file.text();
       const rows = csvText.trim().split('\n').map(row => row.split(','));
 
-      //値を返す
+      //値を返す スライダそのものとそのラベルに値を反映させる
       lensThickness.value=rows[1]
+      setSliderValueLabel(lensThickness,rows[1]);
+
       haloLevel.value=rows[3]
-      dropdownBtn.dataset.value=rows[4]
+      setSliderValueLabel(haloLevel,rows[3]);
+
       prismLevel.value=rows[5]
+      setSliderValueLabel(prismLevel,rows[5]);
+
       maskStart.value=rows[6]
+      setSliderValueLabel(maskStart,rows[6]);
+
       maskEnd.value=rows[7]
+      setSliderValueLabel(maskEnd,rows[7]);
+
       maskAngle.value=rows[8]
+      setSliderValueLabel(maskAngle,rows[8]);
+      
       holeSize.value=rows[9]
-      text.value=rows[10]
+      setSliderValueLabel(holeSize,rows[9]);
+
       textSize.value=rows[11]
+      setSliderValueLabel(textSize,rows[11]);
+      
       crossDensity.value=rows[12]
+      setSliderValueLabel(crossDensity,rows[12]);
+
+      holeType.value=rows[15]
+      setSliderValueLabel(holeType,rows[15])
+
+
+
+      text.value=rows[10]
+      dropdownBtn.dataset.value=rows[4]
       dropdownBtn_mask.dataset.value=rows[13]
       cross.checked=Boolean(parseInt(rows[14]))
+
+      //スライダだけでなく、その右にあるラベル的な要素にも値を返す
 
       
 
@@ -566,7 +610,31 @@ else if(filterTypeValue=="3"){
 else if(filterTypeValue=="4"){
   return "QuadPrism"
 }
-else{
+else if(filterTypeValue=="5"){
   return "Polygon"
 }
+else{
+  return "None"
+}
+}
+
+function setSliderValueLabel(sliderElement,setValue){
+  const sliderWrapper=sliderElement.parentNode;
+  const sliderValueLabel=sliderWrapper.nextElementSibling;
+  sliderValueLabel.textContent=setValue
+}
+
+function returnCSVfileName(){
+const now = new Date();
+
+// monthは0始まりなので1つ足す
+const month = String(now.getMonth() + 1).padStart(2, '0'); 
+const date = String(now.getDate()).padStart(2, '0');
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+
+const formattedDateTime = `${month}${date}-${hours}${minutes}`+".csv";
+
+return formattedDateTime
+
 }

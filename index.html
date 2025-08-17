@@ -42,9 +42,10 @@
                 <div class="dropdown-item" data-value="0">Convex</div>
                 <div class="dropdown-item" data-value="1">Prism</div>
                 <div class="dropdown-item" data-value="2">TriPrism</div>
-                <div class="dropdown-item" data-value="3">HexaPrism</div>
+                <!-- <div class="dropdown-item" data-value="3">HexaPrism</div> -->
                 <div class="dropdown-item" data-value="4">QuadPrism</div>
                 <div class="dropdown-item" data-value="5">Polygon</div>
+                <div class="dropdown-item" data-value="6">None</div>
               </div>
             </div>
 
@@ -214,13 +215,13 @@
                       type="range"
                       class="slider"
                       id="crossDensity"
-                      min="0"
+                      min="1"
                       max="100"
-                      value="10"
+                      value="1"
                       step="1"
                     />
                   </div>
-                  <div class="slider-value" id="sliderValue_cd">10</div>
+                  <div class="slider-value" id="sliderValue_cd">1</div>
                 </div>
               </div>
             </div>
@@ -319,6 +320,28 @@
               </div>
 
               <div>
+                <label for="holeType">hole type</label>
+                <div class="slider-container">
+                  <div class="slider-wrapper">
+                    <div class="slider-background">
+                      <div class="slider-progress" id="sliderProgress_ht"></div>
+                    </div>
+                    <input
+                      type="range"
+                      class="slider"
+                      id="holeType"
+                      min="0"
+                      max="20"
+                      value="0"
+                      step="1"
+                    />
+                  </div>
+                  <div class="slider-value" id="sliderValue_ht">0</div>
+                </div>
+              </div>
+
+
+              <div>
                 <label for="holeSize">hole size</label>
                 <div class="slider-container">
                   <div class="slider-wrapper">
@@ -338,6 +361,9 @@
                   <div class="slider-value" id="sliderValue_hs">0</div>
                 </div>
               </div>
+
+
+             
             </div>
           </div>
         </div>
