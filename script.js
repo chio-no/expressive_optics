@@ -167,11 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // 入力された値を取得
       const searchText = searchBox.value;
 
-      // 入力が空でなければ処理を実行
-      if (searchText) {
         //rhinoで処理する
         onSliderChange();
-      }
     }
   });
 });
