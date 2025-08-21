@@ -289,7 +289,8 @@ async function compute() {
           rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
   }
   else{
-       data = JSON.parse(res.values[1].InnerTree["{0}"][0].data);
+    console.log(res)
+       data = JSON.parse(res.values[1].InnerTree["{0;0}"][0].data);
       rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
     
   }
