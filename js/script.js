@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 
-const definitionName = "filterworkdesignerforui_vray.gh";
+const definitionName = "gh/filterworkdesignerforui_vray.gh";
 
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
@@ -48,15 +48,15 @@ const holeSize = document.getElementById("holeSize");
 holeSize.addEventListener("mouseup", onSliderChange, false);
 holeSize.addEventListener("touchend", onSliderChange, false);
 
-const holeType= document.getElementById("holeType");
+const holeType = document.getElementById("holeType");
 holeType.addEventListener("mouseup", onSliderChange, false);
 holeType.addEventListener("touchend", onSliderChange, false);
 
 const downloadButton = document.getElementById("download");
 downloadButton.addEventListener("click", download, false);
 
-const importButton=document.getElementById("import")
-importButton.addEventListener("click",importParams,false)
+const importButton = document.getElementById("import");
+importButton.addEventListener("click", importParams, false);
 
 //ドロップダウンロジック レンズ形状編
 // DOM要素を取得
@@ -167,8 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // 入力された値を取得
       const searchText = searchBox.value;
 
-        //rhinoで処理する
-        onSliderChange();
+      //rhinoで処理する
+      onSliderChange();
     }
   });
 });
@@ -251,7 +251,7 @@ async function compute() {
   const param13 = new RhinoCompute.Grasshopper.DataTree("mask");
   param13.append([0], [dropdownBtn_mask.dataset.value]);
 
-    const param14 = new RhinoCompute.Grasshopper.DataTree("holeType");
+  const param14 = new RhinoCompute.Grasshopper.DataTree("holeType");
   param14.append([0], [holeType.valueAsNumber]);
 
   //スピナーの表示
@@ -283,16 +283,14 @@ async function compute() {
 
   // b64メッシュを取得
   //crossvalueの有無でindexがどうやら違いそうなのでそれへの対応
-  let data, rhinoMesh
-  if (crossValue==1){
-                 data = JSON.parse(res.values[1].InnerTree["{0;0;0;0;0}"][0].data);
-          rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
-  }
-  else{
-    console.log(res)
-       data = JSON.parse(res.values[1].InnerTree["{0;0}"][0].data);
-      rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
-    
+  let data, rhinoMesh;
+  if (crossValue == 1) {
+    data = JSON.parse(res.values[1].InnerTree["{0;0;0;0;0}"][0].data);
+    rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
+  } else {
+    console.log(res);
+    data = JSON.parse(res.values[1].InnerTree["{0;0}"][0].data);
+    rhinoMesh = rhino.DracoCompression.decompressBase64String(data);
   }
 
   // マテリアルを作成
@@ -314,7 +312,7 @@ async function compute() {
       scene.remove(child);
     }
   });
-  threeMesh.position.set(0,0,100)
+  threeMesh.position.set(0, 0, 100);
 
   scene.add(threeMesh);
 }
@@ -347,8 +345,6 @@ function init() {
   // Rhino models are z-up, so set this as the default
   THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
 
-
-
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#1D1D1F");
   camera = new THREE.PerspectiveCamera(
@@ -357,11 +353,7 @@ function init() {
     1,
     1000
   );
-  camera.position.set(210, 210,220);
-
-
-
-
+  camera.position.set(210, 210, 220);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -404,7 +396,7 @@ function meshToThreejs(mesh, material) {
 
 //現在のパラメータをCSVファイルに書き出す
 async function download(event) {
-//ページのリロードを防止
+  //ページのリロードを防止
   event.preventDefault();
   // スピナーを表示
   document.getElementById("loader").style.display = "block";
@@ -412,8 +404,9 @@ async function download(event) {
   //現在のパラメータを取得し、CSV形式とする
   const crossValue = cross.checked ? 1 : 0;
 
-  const csvContent ="Lens Params"+
-    "\n"+
+  const csvContent =
+    "Lens Params" +
+    "\n" +
     lensThickness.valueAsNumber +
     "\n" +
     0.6 +
@@ -441,22 +434,24 @@ async function download(event) {
     dropdownBtn_mask.dataset.value +
     "\n" +
     crossValue +
-    "\n"+
-    holeType.valueAsNumber+
+    "\n" +
+    holeType.valueAsNumber +
     "\n";
 
-
   try {
+    const CopyCSVName = returnCSVfileName();
 
-const CopyCSVName=returnCSVfileName();
+    const dirHandle = await window.showDirectoryPicker();
+    const dirHandleForCopy = await dirHandle.getDirectoryHandle("log", {
+      create: true,
+    });
 
-const dirHandle = await window.showDirectoryPicker()
-const dirHandleForCopy=await dirHandle.getDirectoryHandle('log', { create: true });
-
-    const fileHandle=await dirHandle.getFileHandle("test.csv", { create: true })
-    const fileHandleCopy=await dirHandleForCopy.getFileHandle(CopyCSVName, { create: true })
-
-
+    const fileHandle = await dirHandle.getFileHandle("test.csv", {
+      create: true,
+    });
+    const fileHandleCopy = await dirHandleForCopy.getFileHandle(CopyCSVName, {
+      create: true,
+    });
 
     // 2. 書き込み用のストリームを作成する
     // この時点でファイルの中身は空になります（トランケート）
@@ -476,11 +471,8 @@ const dirHandleForCopy=await dirHandle.getDirectoryHandle('log', { create: true 
 
     console.log("csv exported");
     //今の値をUI側に返す
-
-
-
   } catch (error) {
-      // スピナーを非表示
+    // スピナーを非表示
     document.getElementById("loader").style.display = "none";
     // ユーザーがファイル選択をキャンセルした場合など
     if (error.name === "AbortError") {
@@ -492,11 +484,9 @@ const dirHandleForCopy=await dirHandle.getDirectoryHandle('log', { create: true 
   }
 }
 
-
-
-async function importParams(){
-    //ファイルピッカを表示し、その中のパラメータをHTMLへ戻す
-    try {
+async function importParams() {
+  //ファイルピッカを表示し、その中のパラメータをHTMLへ戻す
+  try {
     const [fileHandle] = await window.showOpenFilePicker({
       types: [
         {
@@ -507,67 +497,62 @@ async function importParams(){
         },
       ],
     });
-  // 2. 選択されたファイルオブジェクトを取得
-  const file = await fileHandle.getFile();
+    // 2. 選択されたファイルオブジェクトを取得
+    const file = await fileHandle.getFile();
 
-  // 3. ファイルの内容をカンマ区切りとして読み込む
-  const csvText = await file.text();
-      const rows = csvText.trim().split('\n').map(row => row.split(','));
+    // 3. ファイルの内容をカンマ区切りとして読み込む
+    const csvText = await file.text();
+    const rows = csvText
+      .trim()
+      .split("\n")
+      .map((row) => row.split(","));
 
-      //値を返す スライダそのものとそのラベルに値を反映させる
-      lensThickness.value=rows[1]
-      setSliderValueLabel(lensThickness,rows[1]);
+    //値を返す スライダそのものとそのラベルに値を反映させる
+    lensThickness.value = rows[1];
+    setSliderValueLabel(lensThickness, rows[1]);
 
-      haloLevel.value=rows[3]
-      setSliderValueLabel(haloLevel,rows[3]);
+    haloLevel.value = rows[3];
+    setSliderValueLabel(haloLevel, rows[3]);
 
-      prismLevel.value=rows[5]
-      setSliderValueLabel(prismLevel,rows[5]);
+    prismLevel.value = rows[5];
+    setSliderValueLabel(prismLevel, rows[5]);
 
-      maskStart.value=rows[6]
-      setSliderValueLabel(maskStart,rows[6]);
+    maskStart.value = rows[6];
+    setSliderValueLabel(maskStart, rows[6]);
 
-      maskEnd.value=rows[7]
-      setSliderValueLabel(maskEnd,rows[7]);
+    maskEnd.value = rows[7];
+    setSliderValueLabel(maskEnd, rows[7]);
 
-      maskAngle.value=rows[8]
-      setSliderValueLabel(maskAngle,rows[8]);
-      
-      holeSize.value=rows[9]
-      setSliderValueLabel(holeSize,rows[9]);
+    maskAngle.value = rows[8];
+    setSliderValueLabel(maskAngle, rows[8]);
 
-      textSize.value=rows[11]
-      setSliderValueLabel(textSize,rows[11]);
-      
-      crossDensity.value=rows[12]
-      setSliderValueLabel(crossDensity,rows[12]);
+    holeSize.value = rows[9];
+    setSliderValueLabel(holeSize, rows[9]);
 
-      holeType.value=rows[15]
-      setSliderValueLabel(holeType,rows[15])
+    textSize.value = rows[11];
+    setSliderValueLabel(textSize, rows[11]);
 
+    crossDensity.value = rows[12];
+    setSliderValueLabel(crossDensity, rows[12]);
 
+    holeType.value = rows[15];
+    setSliderValueLabel(holeType, rows[15]);
 
-      text.value=rows[10]
-      dropdownBtn.dataset.value=rows[4]
-      dropdownBtn_mask.dataset.value=rows[13]
-      cross.checked=Boolean(parseInt(rows[14]))
+    text.value = rows[10];
+    dropdownBtn.dataset.value = rows[4];
+    dropdownBtn_mask.dataset.value = rows[13];
+    cross.checked = Boolean(parseInt(rows[14]));
 
-      //スライダだけでなく、その右にあるラベル的な要素にも値を返す
+    //スライダだけでなく、その右にあるラベル的な要素にも値を返す
 
-      
+    const filterText = returnFilterTypeTxt(rows[4]);
+    const maskText = returnMaskTypeTxt(rows[13]);
 
-      const filterText=returnFilterTypeTxt(rows[4])
-      const maskText=returnMaskTypeTxt(rows[13])
-
-
-      //ドロップダウンに反映させた値を表示させる
-          selectedValue.textContent = filterText;
+    //ドロップダウンに反映させた値を表示させる
+    selectedValue.textContent = filterText;
     selectedValue_mask.textContent = maskText;
 
-
-      compute();
-
-
+    compute();
   } catch (error) {
     // ユーザーがファイル選択をキャンセルした場合など
     if (error.name === "AbortError") {
@@ -577,62 +562,52 @@ async function importParams(){
       console.error(error);
     }
   }
-
 }
 
-function returnMaskTypeTxt(maskTypeValue){
-if (maskTypeValue=="0"){
-  return "no mask"
-}
-else if(maskTypeValue=="1"){
-  return "positive"
-}
-else{
-  return "negative"
-}
+function returnMaskTypeTxt(maskTypeValue) {
+  if (maskTypeValue == "0") {
+    return "no mask";
+  } else if (maskTypeValue == "1") {
+    return "positive";
+  } else {
+    return "negative";
+  }
 }
 
-function returnFilterTypeTxt(filterTypeValue){
-if (filterTypeValue=="0"){
-  return "Convex"
-}
-else if(filterTypeValue=="1"){
-  return "Prism"
-}
-else if(filterTypeValue=="2"){
-  return "TriPrism"
-}
-else if(filterTypeValue=="3"){
-  return "HexaPrism"
-}
-else if(filterTypeValue=="4"){
-  return "QuadPrism"
-}
-else if(filterTypeValue=="5"){
-  return "Polygon"
-}
-else{
-  return "None"
-}
+function returnFilterTypeTxt(filterTypeValue) {
+  if (filterTypeValue == "0") {
+    return "Convex";
+  } else if (filterTypeValue == "1") {
+    return "Prism";
+  } else if (filterTypeValue == "2") {
+    return "TriPrism";
+  } else if (filterTypeValue == "3") {
+    return "HexaPrism";
+  } else if (filterTypeValue == "4") {
+    return "QuadPrism";
+  } else if (filterTypeValue == "5") {
+    return "Polygon";
+  } else {
+    return "None";
+  }
 }
 
-function setSliderValueLabel(sliderElement,setValue){
-  const sliderWrapper=sliderElement.parentNode;
-  const sliderValueLabel=sliderWrapper.nextElementSibling;
-  sliderValueLabel.textContent=setValue
+function setSliderValueLabel(sliderElement, setValue) {
+  const sliderWrapper = sliderElement.parentNode;
+  const sliderValueLabel = sliderWrapper.nextElementSibling;
+  sliderValueLabel.textContent = setValue;
 }
 
-function returnCSVfileName(){
-const now = new Date();
+function returnCSVfileName() {
+  const now = new Date();
 
-// monthは0始まりなので1つ足す
-const month = String(now.getMonth() + 1).padStart(2, '0'); 
-const date = String(now.getDate()).padStart(2, '0');
-const hours = String(now.getHours()).padStart(2, '0');
-const minutes = String(now.getMinutes()).padStart(2, '0');
+  // monthは0始まりなので1つ足す
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const date = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
 
-const formattedDateTime = `${month}${date}-${hours}${minutes}`+".csv";
+  const formattedDateTime = `${month}${date}-${hours}${minutes}` + ".csv";
 
-return formattedDateTime
-
+  return formattedDateTime;
 }
