@@ -312,9 +312,10 @@ async function compute() {
       scene.remove(child);
     }
   });
-  threeMesh.position.set(0, 0, 100);
 
   scene.add(threeMesh);
+
+  fitToObject(threeMesh, { fill: 0.8, offsetYPx: 300 });
 }
 
 function onSliderChange() {
@@ -353,7 +354,7 @@ function init() {
     1,
     1000
   );
-  camera.position.set(210, 210, 220);
+  camera.position.set(100, -550, 100);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -379,6 +380,9 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  if (scene.children[2]) {
+    console.log(camera.position);
+  }
 }
 
 function onWindowResize() {
@@ -392,6 +396,48 @@ function meshToThreejs(mesh, material) {
   const loader = new THREE.BufferGeometryLoader();
   const geometry = loader.parse(mesh.toThreejsJSON());
   return new THREE.Mesh(geometry, material);
+}
+
+//Meshのビューを調整する関数
+function fitToObject(mesh, { fill = 0.9, offsetYPx = 200 } = {}) {
+  // 1) サイズと中心
+  mesh.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(mesh);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  const center = box.getCenter(new THREE.Vector3());
+
+  // 2) 画面に大きく収めるための距離を計算
+  const maxSize = Math.max(size.x, size.y, size.z);
+  const vFov = THREE.MathUtils.degToRad(camera.fov);
+  const fitHeightDist = maxSize / (2 * Math.tan(vFov * 0.5));
+  const fitWidthDist = fitHeightDist / camera.aspect;
+  let distance = Math.max(fitHeightDist, fitWidthDist);
+  distance /= fill; // fill<1 で「大きめ」に表示
+
+  // 3) 現在の視線方向を維持したまま、中心から distance だけ離れた位置へ
+  const dir = new THREE.Vector3()
+    .subVectors(camera.position, controls.target)
+    .normalize();
+  camera.position.copy(center).addScaledVector(dir, distance);
+  camera.updateProjectionMatrix();
+
+  // 4) 注視点をスクリーンの“上”方向に対して下げる = 画面上では上に寄る
+  const forward = new THREE.Vector3();
+  camera.getWorldDirection(forward);
+  const right = new THREE.Vector3()
+    .crossVectors(forward, camera.up)
+    .normalize();
+  const upVec = new THREE.Vector3().crossVectors(right, forward).normalize();
+
+  const worldPerPixel =
+    (2 * distance * Math.tan(vFov * 0.5)) / renderer.domElement.clientHeight;
+
+  controls.target
+    .copy(center)
+    .addScaledVector(upVec, -offsetYPx * worldPerPixel);
+
+  controls.update();
 }
 
 //現在のパラメータをCSVファイルに書き出す
