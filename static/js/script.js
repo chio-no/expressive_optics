@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 
-const definitionName = "../gh/filterworkdesignerforui_vray.gh";
+const definitionName = "static/gh/filterworkdesignerforui_vray.gh";
 
 // Set ui
 const lensThickness = document.getElementById("lensThickness");
@@ -380,9 +380,6 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  if (scene.children[2]) {
-    console.log(camera.position);
-  }
 }
 
 function onWindowResize() {
@@ -450,84 +447,122 @@ async function download(event) {
   //現在のパラメータを取得し、CSV形式とする
   const crossValue = cross.checked ? 1 : 0;
 
-  const csvContent =
-    "Lens Params" +
-    "\n" +
-    lensThickness.valueAsNumber +
-    "\n" +
-    0.6 +
-    "\n" +
-    haloLevel.valueAsNumber +
-    "\n" +
-    dropdownBtn.dataset.value +
-    "\n" +
-    prismLevel.valueAsNumber +
-    "\n" +
-    maskStart.valueAsNumber +
-    "\n" +
-    maskEnd.valueAsNumber +
-    "\n" +
-    maskAngle.valueAsNumber +
-    "\n" +
-    holeSize.valueAsNumber +
-    "\n" +
-    text.value +
-    "\n" +
-    textSize.valueAsNumber +
-    "\n" +
-    crossDensity.valueAsNumber +
-    "\n" +
-    dropdownBtn_mask.dataset.value +
-    "\n" +
-    crossValue +
-    "\n" +
-    holeType.valueAsNumber +
-    "\n";
+  // const csvContent =
+  //   "Lens Params" +
+  //   "\n" +
+  //   lensThickness.valueAsNumber +
+  //   "\n" +
+  //   0.6 +
+  //   "\n" +
+  //   haloLevel.valueAsNumber +
+  //   "\n" +
+  //   dropdownBtn.dataset.value +
+  //   "\n" +
+  //   prismLevel.valueAsNumber +
+  //   "\n" +
+  //   maskStart.valueAsNumber +
+  //   "\n" +
+  //   maskEnd.valueAsNumber +
+  //   "\n" +
+  //   maskAngle.valueAsNumber +
+  //   "\n" +
+  //   holeSize.valueAsNumber +
+  //   "\n" +
+  //   text.value +
+  //   "\n" +
+  //   textSize.valueAsNumber +
+  //   "\n" +
+  //   crossDensity.valueAsNumber +
+  //   "\n" +
+  //   dropdownBtn_mask.dataset.value +
+  //   "\n" +
+  //   crossValue +
+  //   "\n" +
+  //   holeType.valueAsNumber +
+  //   "\n";
 
-  try {
-    const CopyCSVName = returnCSVfileName();
+  const rawLensPrams = {
+    header: "Lens Params",
+    lens_thickness: lensThickness.valueAsNumber,
+    base_height: 0.6,
+    halo_level: haloLevel.valueAsNumber,
+    lens_type: dropdownBtn.dataset.value,
+    prism_level: prismLevel.valueAsNumber,
+    mask_start: maskStart.valueAsNumber,
+    mask_end: maskEnd.valueAsNumber,
+    mask_angle: maskAngle.valueAsNumber,
+    hole_size: holeSize.valueAsNumber,
+    text: text.value,
+    text_size: textSize.valueAsNumber,
+    cross_density: crossDensity.valueAsNumber,
+    mask_type: dropdownBtn_mask.dataset.value,
+    cross_value: crossValue,
+    hole_type: holeType.valueAsNumber,
+  };
 
-    const dirHandle = await window.showDirectoryPicker();
-    const dirHandleForCopy = await dirHandle.getDirectoryHandle("log", {
-      create: true,
+  fetch("/saveParams", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(rawLensPrams),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        console.log("export successfully");
+        // スピナーを非表示
+        document.getElementById("loader").style.display = "none";
+      }
+    })
+    .catch((error) => {
+      console.error("An error occurred:", error);
     });
 
-    const fileHandle = await dirHandle.getFileHandle("test.csv", {
-      create: true,
-    });
-    const fileHandleCopy = await dirHandleForCopy.getFileHandle(CopyCSVName, {
-      create: true,
-    });
+  // try {
+  //   const CopyCSVName = returnCSVfileName();
 
-    // 2. 書き込み用のストリームを作成する
-    // この時点でファイルの中身は空になります（トランケート）
-    const writableStream = await fileHandle.createWritable();
-    const writableStreamCopy = await fileHandleCopy.createWritable();
+  //   const dirHandle = await window.showDirectoryPicker();
+  //   const dirHandleForCopy = await dirHandle.getDirectoryHandle("log", {
+  //     create: true,
+  //   });
 
-    // 3. 新しい内容をストリームに書き込む
-    await writableStream.write(csvContent);
-    await writableStreamCopy.write(csvContent);
+  //   const fileHandle = await dirHandle.getFileHandle("test.csv", {
+  //     create: true,
+  //   });
+  //   const fileHandleCopy = await dirHandleForCopy.getFileHandle(CopyCSVName, {
+  //     create: true,
+  //   });
 
-    // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
-    await writableStream.close();
-    await writableStreamCopy.close();
+  //   // 2. 書き込み用のストリームを作成する
+  //   // この時点でファイルの中身は空になります（トランケート）
+  //   const writableStream = await fileHandle.createWritable();
+  //   const writableStreamCopy = await fileHandleCopy.createWritable();
 
-    // スピナーを非表示
-    document.getElementById("loader").style.display = "none";
+  //   // 3. 新しい内容をストリームに書き込む
+  //   await writableStream.write(csvContent);
+  //   await writableStreamCopy.write(csvContent);
 
-    console.log("csv exported");
-    //今の値をUI側に返す
-  } catch (error) {
-    // スピナーを非表示
-    document.getElementById("loader").style.display = "none";
-    // ユーザーがファイル選択をキャンセルした場合など
-    if (error.name === "AbortError") {
-      console.log("ファイル選択がキャンセルされました。");
-    } else {
-      console.log(`❌ エラーが発生しました: ${error.message}`);
-      console.error(error);
-    }
-  }
+  //   // 4. ストリームを閉じて、ディスクへの書き込みを完了させる
+  //   await writableStream.close();
+  //   await writableStreamCopy.close();
+
+  //   // スピナーを非表示
+  //   document.getElementById("loader").style.display = "none";
+
+  //   console.log("csv exported");
+  //   //今の値をUI側に返す
+  // } catch (error) {
+  //   // スピナーを非表示
+  //   document.getElementById("loader").style.display = "none";
+  //   // ユーザーがファイル選択をキャンセルした場合など
+  //   if (error.name === "AbortError") {
+  //     console.log("ファイル選択がキャンセルされました。");
+  //   } else {
+  //     console.log(`❌ エラーが発生しました: ${error.message}`);
+  //     console.error(error);
+  //   }
+  // }
 }
 
 async function importParams() {
@@ -548,10 +583,18 @@ async function importParams() {
 
     // 3. ファイルの内容をカンマ区切りとして読み込む
     const csvText = await file.text();
+    console.log(csvText);
+    // これまでのCSV出力ではこっち
+    //   const rows = csvText
+    // .trim()
+    // .split("\n")
+    // .map((row) => row.split(","));
     const rows = csvText
       .trim()
       .split("\n")
-      .map((row) => row.split(","));
+      .map((row) => row.trim().split(","));
+
+    console.log(rows);
 
     //値を返す スライダそのものとそのラベルに値を反映させる
     lensThickness.value = rows[1];

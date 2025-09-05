@@ -1,12 +1,11 @@
-// Set up sliders
-//スライダの装飾用ロジック
+//スライダの装飾用
 document.addEventListener("DOMContentLoaded", () => {
   // 'slider-container'クラスを持つすべての要素を取得
   const sliderContainers = document.querySelectorAll(".slider-wrapper");
 
   // 各スライダーコンテナに対して処理を実行
   sliderContainers.forEach((container) => {
-    // コンテナ内の必要なHTML要素を取得
+    // コンテナ内の必要な要素を取得
     const slider = container.querySelector(".slider");
     const progress = container.querySelector(".slider-progress");
     // const tooltip = container.querySelector(".slider-tooltip");
@@ -21,13 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // プログレスバーの幅を更新
       progress.style.width = percentage + "%";
-
-      // ツールチップの位置とテキストを更新
-      // tooltip.style.left = percentage + "%";
-      // // transformで中央に寄せる（見た目の調整）
-      // // tooltip.style.transform = `translateX(-${percentage}%)`;
-      // tooltip.textContent = value;
-      // console.log(value)
     }
 
     // ページ読み込み時に初期値を設定
