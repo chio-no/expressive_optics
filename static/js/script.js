@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import rhino3dm from "rhino3dm";
 import { RhinoCompute } from "rhinocompute";
 
-const definitionName = "gh/filterworkdesignerforui_vray.gh";
+const definitionName = "../gh/filterworkdesignerforui_vray.gh";
 
 // Set ui
 const lensThickness = document.getElementById("lensThickness");

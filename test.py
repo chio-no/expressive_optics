@@ -5,13 +5,6 @@ import compute_rhino3d.Grasshopper as gh
 import rhino3dm
 import json
 
-app = Flask(__name__)
-@app.route("/",methods=["GET", "POST"])
-def main_page():
-    # handle_gh()
-    return render_template("index.html")
-
-
 def handle_gh():
     print("hey")
     gh_file_path="static/gh/filterworkdesignerforui_vray.gh"
@@ -22,7 +15,8 @@ def handle_gh():
     trees=[]
     trees.append(param1)
     output = gh.EvaluateDefinition(gh_file_path, trees)
-    # print(output["values"][0]["InnerTree"]['{0;0}'], flush=True)
+    print(output["values"][0]["InnerTree"]['{0;0}'][0]["data"], flush=True)
+    print(type(output["values"][0]["InnerTree"]['{0;0}'][0]["data"]))
 
 
-
+handle_gh()
