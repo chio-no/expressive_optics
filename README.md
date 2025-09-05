@@ -1,0 +1,2 @@
+flask+Rhino.computeを使用します
+compute.slnを起動してからflaskでmain.pyを起動
