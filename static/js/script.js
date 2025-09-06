@@ -187,6 +187,7 @@ cross.addEventListener("change", function () {
 });
 //ここからrhino.compute依存
 let rhino, definition;
+let initialLoad=true;
 rhino3dm().then(async (m) => {
   console.log("Loaded rhino3dm.");
   rhino = m; // global
@@ -314,8 +315,10 @@ async function compute() {
   });
 
   scene.add(threeMesh);
-
-  fitToObject(threeMesh, { fill: 0.8, offsetYPx: 300 });
+  if (initialLoad) {
+    fitToObject(threeMesh, { fill: 0.8, offsetYPx: 300 });
+    initialLoad = false;
+  }
 }
 
 function onSliderChange() {
