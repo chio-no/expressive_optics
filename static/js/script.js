@@ -517,7 +517,7 @@ async function download(event) {
         // スピナーを非表示
         document.getElementById("loader").style.display = "none";
         //保存に成功したという旨の表示
-        showSuccessPopup("ファイルの保存に成功しました。");
+        showSuccessPopup("File Saved.");
       }
     })
     .catch((error) => {
