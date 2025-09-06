@@ -516,11 +516,29 @@ async function download(event) {
         console.log("export successfully");
         // スピナーを非表示
         document.getElementById("loader").style.display = "none";
+        //保存に成功したという旨の表示
+        showSuccessPopup("ファイルの保存に成功しました。");
       }
     })
     .catch((error) => {
       console.error("An error occurred:", error);
+      document.getElementById("loader").style.display = "none";
     });
+
+    function showSuccessPopup(message) {
+  // Create popup element
+  const popup = document.createElement("div");
+  popup.className = "success-popup";
+  popup.textContent = message;
+
+  // Append to body
+  document.body.appendChild(popup);
+
+  // Remove after 5 seconds
+  setTimeout(() => {
+    popup.remove();
+  }, 5000);
+}
 
   // try {
   //   const CopyCSVName = returnCSVfileName();
